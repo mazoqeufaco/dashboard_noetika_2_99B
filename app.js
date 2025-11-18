@@ -1235,8 +1235,21 @@ function renderTree(itemMap, decimals){
 
   const treeData = buildD3Tree(TREE_STRUCTURE, itemMap);
 
-  if(typeof d3 === 'undefined'){
-    host.innerHTML = '<em>D3.js não carregado. Recarregue a página.</em>';
+  // Verifica se D3.js está carregado (aguarda um pouco se necessário)
+  let d3lib = null;
+  if(typeof d3 !== 'undefined'){
+    d3lib = d3;
+  } else if(typeof window !== 'undefined' && typeof window.d3 !== 'undefined'){
+    d3lib = window.d3;
+  } else {
+    // Aguarda um pouco e tenta novamente (caso o script ainda esteja carregando)
+    setTimeout(() => {
+      if(typeof d3 !== 'undefined' || (typeof window !== 'undefined' && typeof window.d3 !== 'undefined')){
+        renderTree(itemMap, decimals);
+      } else {
+        host.innerHTML = '<em>D3.js não carregado. Recarregue a página.</em>';
+      }
+    }, 100);
     return;
   }
 
@@ -1244,14 +1257,14 @@ function renderTree(itemMap, decimals){
   const width = 1200 - margin.right - margin.left;
   const height = 700 - margin.top - margin.bottom;
 
-  const svg = d3.select(host).append('svg')
+  const svg = d3lib.select(host).append('svg')
     .attr('width', width + margin.right + margin.left)
     .attr('height', height + margin.top + margin.bottom)
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
-  const tree = d3.layout.tree().size([height, width]);
-  const diagonal = d3.svg.diagonal().projection(d => [d.y, d.x]);
+  const tree = d3lib.layout.tree().size([height, width]);
+  const diagonal = d3lib.svg.diagonal().projection(d => [d.y, d.x]);
 
   let i = 0;
   const duration = 250;
@@ -1308,7 +1321,7 @@ function renderTree(itemMap, decimals){
       .attr('class', 'node')
       .attr('transform', () => `translate(${source.y0},${source.x0})`)
       .on('click', function(d){
-        if(d3.event && d3.event.target && d3.select(d3.event.target).classed('leaf-link')) return;
+        if(d3lib.event && d3lib.event.target && d3lib.select(d3lib.event.target).classed('leaf-link')) return;
         toggleNode(d);
         update(d);
       });
@@ -1345,7 +1358,7 @@ function renderTree(itemMap, decimals){
       })
       .on('click', function(d){
         if(d.isLeaf && d.coordStr){
-          d3.event.stopPropagation();
+          d3lib.event.stopPropagation();
           showSolutionModal(d.name, d.coordStr);
         }
       });
@@ -1462,7 +1475,7 @@ function renderTree(itemMap, decimals){
   update(treeData);
 
   // Adicionar legenda
-  const legend = d3.select(host).append('div')
+  const legend = d3lib.select(host).append('div')
     .attr('class', 'tree-legend')
     .style('margin-top', '20px')
     .style('padding', '15px')

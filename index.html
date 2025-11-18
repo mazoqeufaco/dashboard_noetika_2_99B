@@ -107,6 +107,12 @@
   </footer>
 
   <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script>
+    // Garante que d3 está disponível globalmente
+    if(typeof d3 === 'undefined' && typeof window.d3 !== 'undefined'){
+      window.d3 = window.d3;
+    }
+  </script>
   <script src="tracking.js"></script>
   <script type="module" src="app.js"></script>
 </body>
