@@ -35,16 +35,28 @@ if (isProduction) {
 console.log('🐍 Iniciando backend Python...');
 // Tenta python3 primeiro (comum no Linux/Railway), depois python
 const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+console.log(`🔍 Comando Python: ${pythonCmd}`);
+console.log(`🔍 Diretório: ${projectDir}`);
+console.log(`🔍 Variáveis de ambiente:`);
+console.log(`   PYTHONUNBUFFERED=${process.env.PYTHONUNBUFFERED || 'não definido'}`);
+console.log(`   FLASK_ENV=${process.env.FLASK_ENV || 'não definido'}`);
+console.log(`   BACKEND_PORT=${process.env.BACKEND_PORT || 'não definido'}`);
+
 const pythonBackend = spawn(pythonCmd, ['backend.py'], {
   cwd: projectDir,
   env: { ...process.env },
   stdio: ['ignore', 'pipe', 'pipe']
 });
 
+console.log(`🔍 Processo Python spawnado. PID: ${pythonBackend.pid || 'ainda não atribuído'}`);
+
 pythonBackend.stdout.on('data', (data) => {
   const output = data.toString().trim();
   if (output) {
     console.log(`[Python] ${output}`);
+  } else {
+    // Log mesmo se vazio para debug
+    console.log(`[Python] (output vazio, mas recebido)`);
   }
 });
 
@@ -159,6 +171,7 @@ pythonBackend.on('exit', (code) => {
 });
 
 // Aguarda alguns segundos para o Python iniciar
+console.log(`⏳ Aguardando 5 segundos para o backend Python iniciar...`);
 setTimeout(() => {
   console.log('\n📦 Iniciando servidor Node.js...\n');
   
