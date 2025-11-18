@@ -36,15 +36,32 @@ if (isProduction) {
 
 // Inicia backend Python
 console.log('🐍 Iniciando backend Python...');
+console.log(`📁 Diretório: ${projectDir}`);
+console.log(`🔍 Verificando se backend.py existe...`);
+const backendPath = path.join(projectDir, 'backend.py');
+if (!fs.existsSync(backendPath)) {
+  console.error(`❌ Erro: backend.py não encontrado em ${backendPath}!`);
+  process.exit(1);
+}
+console.log(`✅ backend.py encontrado em ${backendPath}`);
+
 // Tenta python3 primeiro (comum no Linux/Railway), depois python
 const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+console.log(`🔍 Usando comando Python: ${pythonCmd}`);
+console.log(`🔍 Executando: ${pythonCmd} backend.py\n`);
+
 const pythonBackend = spawn(pythonCmd, ['backend.py'], {
   cwd: projectDir,
   env: { 
     ...process.env,
-    PYTHONUNBUFFERED: '1' // Garante que o output do Python apareça imediatamente
+    PYTHONUNBUFFERED: '1', // Garante que o output do Python apareça imediatamente
+    PYTHONIOENCODING: 'utf-8' // Garante encoding UTF-8
   },
   stdio: ['ignore', 'pipe', 'pipe']
+});
+
+pythonBackend.on('spawn', () => {
+  console.log('✅ Processo Python spawnado com sucesso!');
 });
 
 let backendReady = false;
@@ -191,7 +208,7 @@ function checkBackendHealth(callback, maxRetries = 5, retryDelay = 1000) {
   
   function attempt() {
     const req = http.request({
-      hostname: 'localhost',
+      hostname: '127.0.0.1', // Usa IPv4 explicitamente para evitar problemas com IPv6
       port: 5000,
       path: '/api/health',
       method: 'GET',

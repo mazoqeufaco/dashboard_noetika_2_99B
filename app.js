@@ -1245,19 +1245,40 @@ function renderTree(itemMap, decimals){
 
   // Verifica se D3.js está carregado (aguarda um pouco se necessário)
   let d3lib = null;
-  if(typeof d3 !== 'undefined'){
-    d3lib = d3;
-  } else if(typeof window !== 'undefined' && typeof window.d3 !== 'undefined'){
-    d3lib = window.d3;
-  } else {
+  
+  // Função para verificar e usar D3
+  function getD3() {
+    if(typeof d3 !== 'undefined'){
+      return d3;
+    } else if(typeof window !== 'undefined' && typeof window.d3 !== 'undefined'){
+      return window.d3;
+    }
+    return null;
+  }
+  
+  d3lib = getD3();
+  
+  if(!d3lib) {
     // Aguarda um pouco e tenta novamente (caso o script ainda esteja carregando)
-    setTimeout(() => {
-      if(typeof d3 !== 'undefined' || (typeof window !== 'undefined' && typeof window.d3 !== 'undefined')){
-        renderTree(itemMap, decimals);
-      } else {
-        host.innerHTML = '<em>D3.js não carregado. Recarregue a página.</em>';
+    let attempts = 0;
+    const maxAttempts = 10;
+    const checkInterval = setInterval(() => {
+      attempts++;
+      d3lib = getD3();
+      if(d3lib) {
+        clearInterval(checkInterval);
+        // Recarrega a função renderTree com D3 disponível
+        // Limpa o host e renderiza novamente
+        host.innerHTML = '';
+        // Chama a função renderTree novamente (ela vai detectar D3 agora)
+        setTimeout(() => {
+          renderTree(itemMap, decimals);
+        }, 100);
+      } else if(attempts >= maxAttempts) {
+        clearInterval(checkInterval);
+        host.innerHTML = '<em>D3.js não carregado após várias tentativas. Verifique se o script está sendo carregado corretamente.</em>';
       }
-    }, 100);
+    }, 200);
     return;
   }
 

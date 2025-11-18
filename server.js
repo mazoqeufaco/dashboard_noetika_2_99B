@@ -5,7 +5,8 @@ const path = require('path');
 
 // Backend Python port
 const BACKEND_PORT = 5000;
-const BACKEND_HOST = 'localhost';
+// Usa 127.0.0.1 ao invés de localhost para evitar problemas com IPv6 (::1)
+const BACKEND_HOST = '127.0.0.1';
 
 // Usa PORT do ambiente (Railway) ou padrão 8000 para desenvolvimento
 const DEFAULT_PORT = process.env.PORT || 8000;
