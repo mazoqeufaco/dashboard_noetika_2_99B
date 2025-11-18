@@ -197,8 +197,9 @@ pythonBackend.on('exit', (code, signal) => {
   }
 });
 
+// IMPORTANTE: Não inicia o servidor Node.js até o backend Python estar pronto
 // Aguarda alguns segundos para o Python iniciar (aumentado para produção)
-const waitTime = isProduction ? 5000 : 3000;
+const waitTime = isProduction ? 8000 : 5000; // Aumentado para dar mais tempo
 console.log(`⏳ Aguardando ${waitTime/1000}s para o backend Python iniciar...`);
 
 // Função para verificar se o backend está respondendo
@@ -259,6 +260,17 @@ function checkBackendHealth(callback, maxRetries = 5, retryDelay = 1000) {
   // Inicia a primeira tentativa após o tempo de espera inicial
   // Mas primeiro verifica se o backend já está pronto pelos logs
   setTimeout(() => {
+    console.log('\n🔍 Verificando status do backend Python...');
+    console.log(`   backendReady: ${backendReady}`);
+    console.log(`   Logs capturados: ${backendStartupLogs.length} linhas`);
+    if (backendStartupLogs.length > 0) {
+      console.log('   Últimos logs:');
+      backendStartupLogs.slice(-5).forEach(log => console.log(`     ${log}`));
+    } else {
+      console.log('   ⚠️  NENHUM LOG DO PYTHON FOI CAPTURADO!');
+      console.log('   Isso significa que o backend Python não está gerando output.');
+    }
+    
     if (backendReady) {
       console.log('✅ Backend Python já está pronto (detectado pelos logs)!');
       callback(true);
