@@ -212,7 +212,8 @@ function checkBackendHealth(callback, maxRetries = 5, retryDelay = 1000) {
       port: 5000,
       path: '/api/health',
       method: 'GET',
-      timeout: 2000
+      timeout: 2000,
+      family: 4 // Força IPv4 explicitamente
     }, (res) => {
       if (res.statusCode === 200) {
         console.log('✅ Backend Python está respondendo!');

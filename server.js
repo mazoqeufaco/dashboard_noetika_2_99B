@@ -49,6 +49,7 @@ function proxyToBackend(req, res) {
       port: BACKEND_PORT,
       path: req.url,
       method: req.method,
+      family: 4, // Força IPv4 explicitamente
       headers: {
         ...req.headers,
         host: `${BACKEND_HOST}:${BACKEND_PORT}`

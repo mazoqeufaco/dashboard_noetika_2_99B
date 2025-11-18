@@ -106,7 +106,8 @@
     <p class="footer-text">Powered by Noetika AI - Gabriel R A S - 2025 - all rights reserved</p>
   </footer>
 
-  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <!-- D3.js v3 - usando CDN alternativo (jsDelivr) para evitar bloqueios -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@3/d3.min.js"></script>
   <script>
     // Garante que d3 está disponível globalmente
     (function() {
@@ -114,7 +115,20 @@
         window.d3 = d3;
         console.log('✅ D3.js carregado:', typeof d3);
       } else {
-        console.error('❌ D3.js não foi carregado!');
+        console.error('❌ D3.js não foi carregado! Tentando CDN alternativo...');
+        // Fallback: tenta carregar do CDN oficial
+        const script = document.createElement('script');
+        script.src = 'https://d3js.org/d3.v3.min.js';
+        script.onload = function() {
+          if(typeof d3 !== 'undefined'){
+            window.d3 = d3;
+            console.log('✅ D3.js carregado do CDN oficial');
+          }
+        };
+        script.onerror = function() {
+          console.error('❌ Falha ao carregar D3.js de ambos os CDNs!');
+        };
+        document.head.appendChild(script);
       }
     })();
   </script>
