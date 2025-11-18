@@ -7,11 +7,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Tribússola - um norte para sua solução</h1>
-  <h2>Desafio SEG Automotive - DIP prof Ugo Ibusuki UFABC SBC 2025-3</h2>
-  <p>Clique sobre o triângulo para definir sua prioridade</p>
+  <div class="main-content">
+    <h1 class="main-title">Tribússola - um norte para sua solução</h1>
+    <h2 class="subtitle">dashboard interativo</h2>
+    <p>Clique sobre o triângulo para definir sua prioridade</p>
 
-  <div class="wrap">
+    <div class="wrap">
     <div class="tri-wrap">
       <canvas id="tri" width="900" height="620"></canvas>
       <!-- Rótulos externos -->
@@ -50,15 +51,17 @@
     <div class="result" id="rankingSection" style="display:none">
       <h2>Ranking</h2>
       <div id="table"></div>
+      <div id="clusterPlot"></div>
       <div class="result-actions">
-        <button id="btnTree" class="ghost">Todas soluções</button>
+        <button id="btnGenerateReport" class="ghost">Gerar relatório</button>
+        <button id="btnTree" class="ghost">Árvore de Soluções</button>
+      </div>
+      <!-- Árvore aparece abaixo do gráfico quando clicar no botão -->
+      <div class="tree" id="treeSection" style="display:none">
+        <h2>Árvore de Soluções - clique para explorar</h2>
+        <div id="tree"></div>
       </div>
     </div>
-
-    <!-- Árvore (inicia oculto) -->
-    <div class="tree" id="treeSection" style="display:none">
-      <h2>Árvore de soluções</h2>
-      <div id="tree"></div>
     </div>
   </div>
 
@@ -73,6 +76,38 @@
     </div>
   </dialog>
 
+  <!-- Modal de Informações da Solução -->
+  <dialog id="solutionModal">
+    <div class="modal-header">
+      <h2>Detalhes da Solução</h2>
+      <button id="closeModal" class="modal-close" aria-label="Fechar">×</button>
+    </div>
+    <div id="solutionModalContent" class="modal-content"></div>
+  </dialog>
+
+  <!-- Modal de Confirmação de Relatório -->
+  <dialog id="reportConfirmDlg">
+    <div class="dlg-content">
+      <p><strong>Transparência sobre consultoria e dados</strong><br><br>
+      Este material possui caráter consultivo (diagnóstico e recomendações com base nos dados fornecidos). Processamos dados como IP, timestamp e métricas de navegação para: (1) gerar e disponibilizar o PDF/relatório, (2) registrar sua ciência e manter trilha de auditoria, e (3) viabilizar contato comercial para eventual proposta. Base legal: procedimentos pré-contratuais/contratuais e legítimo interesse, além do consentimento quando aplicável. Direitos do titular: acesso, correção, oposição e eliminação contate noetikaai@gmail.com</p>
+      <div class="dlg-actions">
+        <button id="reportConfirmOk" class="primary">Ok</button>
+        <button id="reportConfirmCancel">Cancelar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p class="footer-header-text">um projeto motivado pelo Desafio SEG Automotive - DIP prof Ugo Ibusuki UFABC SBC 2025-3</p>
+    <div class="footer-logo">
+      <img src="logo%20Noetika%20AI%202.png" alt="NOETIKA AI" class="footer-logo-image" />
+    </div>
+    <p class="footer-text">Powered by Noetika AI - Gabriel R A S - 2025 - all rights reserved</p>
+  </footer>
+
+  <!-- D3.js não é mais necessário - árvore usa HTML simples (como na pasta 99D) -->
+  <script src="tracking.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>

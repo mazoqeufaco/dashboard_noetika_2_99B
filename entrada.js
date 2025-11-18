@@ -39,10 +39,29 @@ function detectVerticesByAlpha(img,w,h){
   if(!pts.length) return {top:{x:w/2,y:0},left:{x:0,y:h-1},right:{x:w-1,y:h-1}};
   
   const extreme=(key,min=true,band=3)=>{
-    const vs=pts.map(p=>p[key]); const ex=min?Math.min(...vs):Math.max(...vs);
+    if(!pts || pts.length === 0) {
+      // Fallback se não houver pontos
+      if(key==='y') return {x:w/2,y:0};
+      if(key==='x' && min) return {x:0,y:h-1};
+      return {x:w-1,y:h-1};
+    }
+    const vs=pts.map(p=>p[key]); 
+    if(vs.length === 0) {
+      if(key==='y') return {x:w/2,y:0};
+      if(key==='x' && min) return {x:0,y:h-1};
+      return {x:w-1,y:h-1};
+    }
+    const ex=min?Math.min(...vs):Math.max(...vs);
     const sel=pts.filter(p=>Math.abs(p[key]-ex)<=band);
-    if(key==='y'){ const cx=sel.reduce((s,p)=>s+p.x,0)/sel.length;
-      return sel.reduce((b,p)=>Math.abs(p.x-cx)<Math.abs(b.x-cx)?p:b,sel[0]); }
+    if(sel.length === 0) {
+      // Se nenhum ponto na banda, retorna o mais próximo do extremo
+      const closest = pts.reduce((b,p)=>Math.abs(p[key]-ex)<Math.abs(b[key]-ex)?p:b,pts[0]);
+      return closest;
+    }
+    if(key==='y'){ 
+      const cx=sel.reduce((s,p)=>s+p.x,0)/sel.length;
+      return sel.reduce((b,p)=>Math.abs(p.x-cx)<Math.abs(b.x-cx)?p:b,sel[0]); 
+    }
     return sel.reduce((b,p)=>p.y>b.y?p:b,sel[0]);
   };
   return { top:extreme('y',true), left:extreme('x',true), right:extreme('x',false) };
