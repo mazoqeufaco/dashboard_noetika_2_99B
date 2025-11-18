@@ -11,9 +11,18 @@ const fs = require('fs');
 const projectDir = path.resolve(__dirname || process.cwd());
 const isProduction = process.env.PORT || process.env.RAILWAY_ENVIRONMENT;
 
-console.log('🚀 Iniciando serviços...');
+// Log imediato para garantir que o script está sendo executado
+console.log('');
+console.log('='.repeat(60));
+console.log('🚀 INICIANDO start.js - Script de inicialização');
+console.log('='.repeat(60));
 console.log(`📁 Diretório: ${projectDir}`);
-console.log(`🌐 Ambiente: ${isProduction ? 'PRODUÇÃO (Railway)' : 'DESENVOLVIMENTO'}\n`);
+console.log(`🌐 Ambiente: ${isProduction ? 'PRODUÇÃO (Railway)' : 'DESENVOLVIMENTO'}`);
+console.log(`🔍 Node version: ${process.version}`);
+console.log(`🔍 Platform: ${process.platform}`);
+console.log(`🔍 PORT env: ${process.env.PORT || 'não definido'}`);
+console.log(`🔍 RAILWAY_ENVIRONMENT: ${process.env.RAILWAY_ENVIRONMENT || 'não definido'}`);
+console.log('');
 
 // Verifica se backend.py existe (primeira verificação)
 const backendPath = path.join(projectDir, 'backend.py');
@@ -22,6 +31,9 @@ if (!fs.existsSync(backendPath)) {
   process.exit(1);
 }
 console.log(`✅ backend.py encontrado (primeira verificação): ${backendPath}`);
+const backendStats = fs.statSync(backendPath);
+console.log(`🔍 Tamanho do arquivo: ${backendStats.size} bytes`);
+console.log(`🔍 Última modificação: ${backendStats.mtime}`);
 
 // Configura ambiente para Python em produção
 if (isProduction) {
